@@ -8,38 +8,43 @@
 </head>
 <body>
 
-  <!-- Navbar -->
-  <header class="navbar">
-    <nav class="container">
-      <a href="{{ url_for('home') }}" class="brand">TaskFlow</a>
-      <ul class="nav">
-        {% if current_user.is_authenticated %}
-          <li><span>👋 {{ current_user.username }}</span></li>
-          <li><a href="{{ url_for('home') }}">Inicio</a></li>
-          <li><a href="{{ url_for('create_task') }}">Nueva tarea</a></li>
-          <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
-        {% else %}
-          <li><a href="{{ url_for('login') }}">Iniciar sesión</a></li>
-          <li><a href="{{ url_for('signup') }}">Registrarse</a></li>
-        {% endif %}
-      </ul>
-    </nav>
-  </header>
+<!-- ======= NAVBAR ======= -->
+<header class="navbar">
+  <nav class="container">
+    <a href="{{ url_for('home') }}" class="brand">TaskFlow</a>
 
-  <main class="container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flash">
-          {% for category, message in messages %}
-            <div class="flash-item {{ category }}">{{ message }}</div>
-          {% endfor %}
-        </div>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú">☰</button>
+
+    <ul class="nav" id="nav-menu">
+      {% if current_user.is_authenticated %}
+        <li><span>👋 {{ current_user.username }}</span></li>
+        <li><a href="{{ url_for('home') }}">Inicio</a></li>
+        <li><a href="{{ url_for('create_task') }}">Nueva tarea</a></li>
+        <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
+      {% else %}
+        <li><a href="{{ url_for('login') }}">Iniciar sesión</a></li>
+        <li><a href="{{ url_for('signup') }}">Registrarse</a></li>
       {% endif %}
-    {% endwith %}
+    </ul>
+  </nav>
+</header>
 
-    {% block content %}{% endblock %}
-  </main>
+<!-- ======= MAIN ======= -->
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash">
+        {% for category, message in messages %}
+          <div class="flash-item {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ======= MODAL DE CONFIRMACIÓN ======= -->
 <div id="confirmModal" class="modal">
   <div class="modal-content">
     <h3>¿Estás seguro de que deseas eliminar esta tarea?</h3>
@@ -53,34 +58,51 @@
   </div>
 </div>
 
+<!-- ======= SCRIPTS ======= -->
 <script>
-  // --- MODAL GLOBAL PARA ELIMINAR ---
-  const modal = document.getElementById('confirmModal');
-  const cancelBtn = document.getElementById('cancelBtn');
-  const deleteForm = document.getElementById('deleteForm');
-  let currentAction = '';
+  // --- MENÚ RESPONSIVE ---
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('nav-toggle');
+    const menu = document.getElementById('nav-menu');
 
-  // Muestra el modal y configura la acción del formulario
-  function confirmDelete(actionUrl) {
-    currentAction = actionUrl;
-    deleteForm.action = currentAction;
-    modal.style.display = 'flex';
-  }
-
-  // Cierra el modal
-  cancelBtn.addEventListener('click', () => {
-    modal.style.display = 'none';
+    if (toggle && menu) {
+      toggle.addEventListener('click', () => {
+        menu.classList.toggle('active');
+      });
+    }
   });
 
-  // Cierra si se hace clic fuera del modal
-  window.addEventListener('click', (e) => {
-    if (e.target === modal) modal.style.display = 'none';
+  // --- MODAL GLOBAL PARA ELIMINAR ---
+  document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("confirmModal");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const deleteForm = document.getElementById("deleteForm");
+
+    // Inicialmente oculto
+    modal.style.display = "none";
+
+    // Función global
+    window.confirmDelete = function(actionUrl) {
+      deleteForm.action = actionUrl;
+      modal.style.display = "flex";
+    };
+
+    // Cerrar con botón "No"
+    cancelBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    // Cerrar al hacer clic fuera del modal
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) modal.style.display = "none";
+    });
   });
 </script>
 
-  <footer class="footer">
-    <p>&copy; 2025 TaskFlow – Gestor de Tareas</p>
-  </footer>
+<!-- ======= FOOTER ======= -->
+<footer class="footer">
+  <p>&copy; 2025 TaskFlow – Gestor de Tareas</p>
+</footer>
 
 </body>
 </html>
