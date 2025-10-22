@@ -1,0 +1,38 @@
+[project]
+name = "taskflow"
+version = "1.0.0"
+description = "A Flask-based task management application with authentication and PostgreSQL integration."
+authors = [
+    { name = "Daniel Abdi", email = "your-email@example.com" }
+]
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+
+dependencies = [
+    "flask>=3.1.2",
+    "flask-wtf>=1.2.2",
+    "flask-login>=0.6.3",
+    "flask-sqlalchemy>=3.1.1",
+    "python-slugify>=8.0.4",
+    "email-validator>=2.3.0",
+    "psycopg[binary,pool]>=3.2.10",
+    "werkzeug>=3.0.4"
+]
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "black>=24.4.2",
+    "flake8>=7.0.0",
+    "pytest>=8.3.2"
+]
+
+[build-system]
+requires = ["flit_core>=3.9.0"]
+build-backend = "flit_core.buildapi"
+
+[tool.flask]
+app = "src.taskflow.run"
+env = "development"
+debug = true

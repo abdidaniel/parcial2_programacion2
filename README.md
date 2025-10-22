@@ -10,7 +10,7 @@ A Flask-based task management system that allows users to create, manage and tra
 ## Features
 - User authentication (signup/login/logout)
 - Create, read, update and delete tasks
-- Mark tasks as complete/incomplete
+- Mark tasks as complete/incompletex
 - Task due dates
 - Secure password handling
 - User-specific task management
