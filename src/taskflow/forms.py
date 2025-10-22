@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, DateTimeField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField,  DateField
 from wtforms.validators import DataRequired, Length, Email, ValidationError
-from .models import User
+from models import User
 
 # Formulario de registro (SignupForm)
 class SignupForm(FlaskForm):
@@ -25,7 +25,7 @@ class LoginForm(FlaskForm):
 # Formulario para crear/editar tareas (TaskForm)
 class TaskForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(min=3, max=100)])
-    description = TextAreaField('Description', validators=[Length(max=500)])
-    due_date = DateTimeField('Due Date', validators=[DataRequired()])
-    status = StringField('Status', validators=[DataRequired()])
-    submit = SubmitField('Save Task')
+    description = TextAreaField('Description', validators=[DataRequired(), Length(min=3)])
+    due_date = DateField('Fecha Límite', format='%Y-%m-%d', validators=[DataRequired()])
+    submit = SubmitField('Guardar')
+

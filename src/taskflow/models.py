@@ -3,6 +3,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from slugify import slugify
+import uuid
 
 db = SQLAlchemy()
 
@@ -39,21 +40,23 @@ class User(db.Model, UserMixin):
         return User.query.filter_by(email=email).first()
 
 class Task(db.Model):
-    __tablename__ = 'task'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    status = db.Column(db.String(50), default='pending')
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    slug = db.Column(db.String(255), unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    due_date = db.Column(db.Date, nullable=False)
+    is_done = db.Column(db.Boolean, default=False)
+    slug = db.Column(db.String(100), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def save(self):
-        if not self.slug and self.title:
-            self.slug = slugify(self.title)
-        if not self.id:
-            db.session.add(self)
+        """Guarda la tarea generando un slug automáticamente si no existe"""
+        if not self.slug:
+            base_slug = slugify(self.title)
+            unique_id = str(uuid.uuid4())[:8]  # evitar duplicados
+            self.slug = f"{base_slug}-{unique_id}"
+        db.session.add(self)
         db.session.commit()
-        return self
 
     @staticmethod
     def get_by_slug(slug):

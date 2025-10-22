@@ -1,7 +1,8 @@
 from flask import Flask, render_template, redirect, url_for, flash, request, abort, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from .models import User, Task, db
-from .forms import SignupForm, LoginForm, TaskForm
+from models import User, Task, db
+from forms import SignupForm, LoginForm, TaskForm
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'clave-super-segura'
@@ -127,38 +128,38 @@ def logout():
     return redirect(url_for('home'))
 
 
-# Ruta de crear/editar tarea (CRUD)
 @app.route('/admin/task/', methods=['GET', 'POST'])
 @login_required
 def create_task():
     form = TaskForm()
     if form.validate_on_submit():
-        task = Task(title=form.title.data, description=form.description.data,
-                    due_date=form.due_date.data, status=form.status.data, user_id=current_user.id)
+        task = Task(
+            title=form.title.data,
+            description=form.description.data,
+            due_date=form.due_date.data,
+            user_id=current_user.id
+        )
         task.save()
-        flash('Task created successfully!')
+        flash('Tarea creada exitosamente', 'success')
         return redirect(url_for('home'))
     return render_template('admin/task_form.html', form=form)
-
 
 # Ruta para editar tarea
 @app.route('/admin/task/<slug>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_task(slug):
-    task = Task.get_by_slug(slug)
-    if task is None or task.user_id != current_user.id:
-        abort(403)  # Si la tarea no existe o no pertenece al usuario actual
-
-    form = TaskForm(obj=task)  # Rellenar el formulario con datos actuales de la tarea
+    task = Task.query.filter_by(slug=slug).first_or_404()
+    form = TaskForm(obj=task)
     if form.validate_on_submit():
         task.title = form.title.data
         task.description = form.description.data
         task.due_date = form.due_date.data
-        task.status = form.status.data
-        task.save()
-        flash('Task updated successfully!')
-        return redirect(url_for('task_view', slug=task.slug))
+        # ❌ task.status = form.status.data  ← eliminar esta línea
+        db.session.commit()
+        flash('Tarea actualizada correctamente', 'success')
+        return redirect(url_for('home'))
     return render_template('admin/task_form.html', form=form)
+
 
 
 # Ruta para eliminar tarea
@@ -174,13 +175,20 @@ def delete_task(slug):
     flash('Task deleted successfully!')
     return redirect(url_for('home'))
 
+@app.route('/toggle/<int:task_id>', methods=['POST'])
+@login_required
+def toggle_task(task_id):
+    task = Task.query.get_or_404(task_id)
+    if task.user_id != current_user.id:
+        abort(403)
+    task.is_done = not task.is_done
+    db.session.commit()
+    return redirect(url_for('home'))
 
-# Añade esto al final del archivo
+
 if __name__ == '__main__':
     with app.app_context():
-        # Crear tablas si no existen
         db.create_all()
         print("✅ Database tables created")
-    
     print("🚀 Starting server...")
     app.run(debug=True)

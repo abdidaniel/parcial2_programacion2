@@ -1,0 +1,31 @@
+{% extends 'base_template.html' %}
+{% block content %}
+<div class="form-container">
+  <h1>Iniciar Sesión</h1>
+  <form method="POST" novalidate>
+    {{ form.csrf_token }}
+    
+    <div class="field">
+      {{ form.email.label }}
+      {{ form.email(size=40) }}
+      {% for err in form.email.errors %}<div class="error">{{ err }}</div>{% endfor %}
+    </div>
+    
+    <div class="field">
+      {{ form.password.label }}
+      {{ form.password(size=40) }}
+      {% for err in form.password.errors %}<div class="error">{{ err }}</div>{% endfor %}
+    </div>
+
+    <div class="field checkbox">
+      {{ form.remember_me() }} {{ form.remember_me.label.text }}
+    </div>
+
+    {{ form.submit(class_='btn primary') }}
+  </form>
+
+  <p class="alt-link">
+    ¿No tienes cuenta? <a href="{{ url_for('signup') }}">Regístrate aquí</a>.
+  </p>
+</div>
+{% endblock %}

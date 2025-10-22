@@ -1,4 +1,4 @@
-#Desarrollado por
-#Abdi Daniel Escobar
-#Sebastián Gómez
-#Andrés Girón
+# Desarrollado por
+## Abdi Daniel Escobar
+## Sebastián Gómez
+## Andrés Girón

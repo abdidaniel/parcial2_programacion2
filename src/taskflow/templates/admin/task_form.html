@@ -1,0 +1,40 @@
+{% extends 'base_template.html' %}
+{% block content %}
+<div class="form-container">
+  <h1>Nueva Tarea</h1>
+  <form method="POST" novalidate>
+    {{ form.csrf_token }}
+
+    <div class="field">
+      {{ form.title.label }}
+      {{ form.title(size=50, placeholder="Ej: Entregar informe final") }}
+      {% for err in form.title.errors %}
+        <div class="error">{{ err }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="field">
+      {{ form.description.label }}
+      {{ form.description(rows=4, cols=50, placeholder="Describe brevemente la tarea...") }}
+      {% for err in form.description.errors %}
+        <div class="error">{{ err }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="field">
+      <label for="due_date">Fecha Límite</label>
+      <input type="date" id="due_date" name="due_date"
+             value="{{ form.due_date.data|default('', true) }}"
+             class="calendar-input">
+      {% for err in form.due_date.errors %}
+        <div class="error">{{ err }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="btn primary">Guardar</button>
+      <a href="{{ url_for('home') }}" class="btn">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

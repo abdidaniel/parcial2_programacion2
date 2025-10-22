@@ -1,0 +1,33 @@
+{% extends 'base_template.html' %}
+{% block content %}
+<div class="task-detail">
+  <h1>{{ task.title }}</h1>
+
+  <p><strong>Estado:</strong>
+    {% if task.is_done %}
+      ✅ <span class="done-text">Completada</span>
+    {% else %}
+      ⏳ <span class="pending-text">Pendiente</span>
+    {% endif %}
+  </p>
+
+  <p><strong>Fecha límite:</strong> {{ task.due_date.strftime('%Y-%m-%d %H:%M') }}</p>
+  
+  <p>{{ task.description }}</p>
+
+  <div class="actions">
+    <a href="{{ url_for('edit_task', slug=task.slug) }}" class="btn small">Editar</a>
+    <form method="POST" action="{{ url_for('delete_task', slug=task.slug) }}" style="display:inline;">
+      <button
+        type="button"
+        class="btn small danger"
+        onclick="confirmDelete('{{ url_for('delete_task', slug=task.slug) }}')">
+        Eliminar
+        </button>
+
+    </form>
+  </div>
+
+  <p><a href="{{ url_for('home') }}" class="back-link">← Volver al panel</a></p>
+</div>
+{% endblock %}
